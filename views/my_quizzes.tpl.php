@@ -17,7 +17,7 @@
 						
 						<strong>Score: </strong>
 						<? $marks = round($r['marks']*100/$r['total'],2).'% ('.$r['marks'].'/'.$r['total'].')';
-						   $mrkline = "<span class='text-accent'>".$marks."</span> <a class='tag fg-white bg-green' href='?module=student_quizzes&action=quiz_result&id=".$r['quizid']."&sid=".USER_ID."'>View</a>";
+						   $mrkline = "<span class='text-accent'>".$marks."</span> <a class='tag fg-white bg-green place-right' href='?module=student_quizzes&action=quiz_result&id=".$r['quizid']."&sid=".USER_ID."'>My Result</a>";
 						if ($r['marked']) {
 							if ($r['showmarks'] == 'After End Date') { 
 								if (time() > strtotime($r['enddate'])) {

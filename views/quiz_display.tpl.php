@@ -1,4 +1,6 @@
 <h2> <?=$quiz['name']?> </h2> <br>
+<div class="countdown" data-role="countdown" style='position:fixed;right:5%;bottom:0%;z-index:1000;' data-stop='<?=$quiz['enddate']?>' data-on-stop='endQuiz()'></div>
+
 <form enctype="multipart/form-data" <?=VALIDATEFORM?> action="?module=student_quizzes&action=quiz_save" method="post">	
 	<?=insertHiddenInput('quizid',$quiz['id'])?>
 	
@@ -86,8 +88,14 @@
 </form>
 
 <script>
+	function endQuiz() {
+		triggerError('Test has ended. Submitting answers.');
+		$('input[type="submit"]').remove();
+		$('form').submit();
+	}
+	
 	$( function() {
 		$('.mi').select2();
 		$('.select2').addClass('full-size');
 	})
-	</script>	
+</script>	

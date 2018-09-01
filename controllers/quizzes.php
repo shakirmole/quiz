@@ -203,7 +203,7 @@ if ( $action == 'quiz_questions_save' ) {
 		$FillBlanks->deleteWhere($dData);
 		foreach ($_POST['fb'] as $r) {
 			$qData['answer'] = $r;
-			if ($r) $FillBlanks->insert($qData);
+			if ($r != '') $FillBlanks->insert($qData);
 		}
 	}
 	if ($miniData['typeid'] == 2) { //sa
@@ -221,7 +221,7 @@ if ( $action == 'quiz_questions_save' ) {
 		foreach ($_POST['mc'] as $v=>$r) {
 			$qData['answer'] = $r;
 			if ($v == $_POST['amc']) $qData['correct'] = 1; else $qData['correct'] = 0;
-			if ($r) $MultipleChoices->insert($qData);
+			if ($r != '') $MultipleChoices->insert($qData);
 		}
 	}
 	if ($miniData['typeid'] == 5) { //mi
@@ -229,7 +229,7 @@ if ( $action == 'quiz_questions_save' ) {
 		foreach ($_POST['mil'] as $v=>$r) {
 			$qData['qoption'] = $r;
 			$qData['answer'] = $_POST['mir'][$v];
-			if ($r && $_POST['mir'][$v]) $MatchingItems->insert($qData);
+			if ($r != '' && $_POST['mir'][$v]) $MatchingItems->insert($qData);
 		}
 	}
 	if ($miniData['typeid'] == 6) { //tf
