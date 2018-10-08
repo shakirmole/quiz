@@ -20,13 +20,13 @@
 						<span style='margin-left:10px' class='place-right mif-question mif-2x' data-role="hint" data-hint-mode="2" data-hint="<?=$r['description']?>"></span>
 						<a href="#" onclick="openWindow('?module=student_quizzes&action=quiz_files&id=<?=$r['id']?>')"><span class='place-right mif-download mif-2x'></span></a>
 						
-						<h4> <?=fDate($r['startdate'],'jS M h:i A')?> <br>
+						<h4> <?=fDate($r['startdate'],'jS M h:i:s A')?> <br>
 						<small class=''><?=$r['qns']?> Questions (<?=$r['marks']?> Marks)</small>
 						</h4>
 						
 						<small>Ending in</small><br>
-						<div class="countdown no-pc" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-stop='<?=fDate($r['enddate'],'Y-m-d H:i')?>' style="font-size: 1rem"></div>
-						<div class="countdown no-phone" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-stop='<?=fDate($r['enddate'],'Y-m-d H:i')?>' style="font-size: 0.5rem"></div>	<br><br>
+						<div class="countdown no-pc" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-on-stop='resetPage()' data-stop='<?=fDate($r['enddate'],'Y-m-d H:i:s')?>' style="font-size: 1rem"></div>
+						<div class="countdown no-phone" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-on-stop='resetPage()' data-stop='<?=fDate($r['enddate'],'Y-m-d H:i:s')?>' style="font-size: 0.5rem"></div>	<br><br>
 						
 						<div class='align-center'>
 							<? if ($allowed) { ?>
@@ -69,8 +69,8 @@
 						</h4>
 						
 						<small>Starting in</small><br>
-						<div class="countdown no-pc" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-on-stop='resetPage()' data-stop='<?=fDate($r['startdate'],'Y-m-d H:i')?>' style="font-size: 1rem"></div>
-						<div class="countdown no-phone" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-stop='<?=fDate($r['startdate'],'Y-m-d H:i')?>' style="font-size: 0.5rem"></div>	<br><br>
+						<div class="countdown no-pc" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-on-stop='resetPage()' data-stop='<?=fDate($r['startdate'],'Y-m-d H:i:s')?>' style="font-size: 1rem"></div>
+						<div class="countdown no-phone" data-role="countdown" data-background-color="bg-<?=COLOR?>" data-stop='<?=fDate($r['startdate'],'Y-m-d H:i:s')?>' style="font-size: 0.5rem"></div>	<br><br>
 					</div>
 				</div>
 			</div>
@@ -81,6 +81,7 @@
 
 <script>
 	function resetPage() {
+		console.log('asd');
 		location.reload(true);
 	}
 </script>

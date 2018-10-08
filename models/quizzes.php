@@ -17,13 +17,13 @@
 					inner join subcategories as s on s.id = q.scategoryid
 					where 1 = 1";
 					if ( $schoolid ) $sql .= " and q.schoolid = " . $schoolid;
-			if ( $status == 'started' ) $sql .= " and q.startdate <= '" . date('Y-m-d H:i') . "' and q.enddate >= '" . date('Y-m-d H:i') . "'";
-			if ( $status == 'upcoming' ) $sql .= " and q.startdate > '" . date('Y-m-d H:i') . "'";
+			if ( $status == 'started' ) $sql .= " and q.startdate <= '" . date('Y-m-d H:i:s') . "' and q.enddate >= '" . date('Y-m-d H:i:s') . "'";
+			if ( $status == 'upcoming' ) $sql .= " and q.startdate > '" . date('Y-m-d H:i:s') . "'";
 			if ( $status == 'now' ) $sql .= " and q.startdate = DATE_FORMAT(NOW(), '%Y-%m-%d %k:%i')";
 			if ( $status == 'endnow' ) $sql .= " and q.enddate = DATE_FORMAT(NOW(), '%Y-%m-%d %k:%i')";
 			
 			$sql .= " order by q.id desc";
-			// echo $sql;
+			// echo $sql.'<br>';
 			return fetchRows($sql);
 		}
 		
