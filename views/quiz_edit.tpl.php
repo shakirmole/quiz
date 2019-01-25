@@ -1,4 +1,4 @@
-<h3> Add Quiz </h3>
+<h3> Add Test </h3>
 <form enctype="multipart/form-data" method="post" <?=VALIDATEFORM?> <?=windowOnSubmit('quizzes','quiz_save')?>>
 	<?=insertHiddenInput('id',$quiz['id'])?>
 	<?=insertHiddenInput('quiz[schoolid]',SCHOOLID)?>

@@ -1,0 +1,2 @@
+ALTER TABLE `quizzes`
+ADD COLUMN `parentquizid`  int NULL AFTER `schoolid`;

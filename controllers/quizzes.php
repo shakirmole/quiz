@@ -78,6 +78,162 @@ if ( $action == 'ajax_quiz_save' ) {
 	$data['content'] = $response;
 }
 
+if ( $action == 'template_quiz_add') {
+	
+	$tData['cats'] = $Categories->search(SCHOOLID);
+	$tData['scats'] = $Subcategories->search(SCHOOLID);
+	
+	$data['content'] = loadTemplate('template_quiz_edit.tpl.php',$tData);
+}
+
+if ( $action == 'template_quiz_section_save') {
+	
+	$miniData = $_POST['quiz'];
+	$section = $_POST['section'];
+	
+	$Quizzes->insert($miniData);
+	$quizid = $Quizzes->lastId();
+	
+	$sectionSortNo = 1;
+	foreach ($section as $sid=>$qno) {
+		$questions = $QuizQuestions->search('',$sid);
+		$typeid = $questions[0]['typeid'];
+		
+		unset($sectionQuestions);
+		shuffle($questions);
+		for ($i=0;$i<$qno;$i++) {
+			$sectionQuestions[] = $questions[$i];
+		}
+
+		if ($sectionQuestions[0]) {
+			$qSection = $QuizSections->getDetails($sid);
+			$sData['title'] = $qSection['title'];
+			$sData['quizid'] = $quizid;
+			$sData['typeid'] = $typeid;
+			$sData['sortno'] = $sectionSortNo;
+			$sData['createdby'] = USER_ID;
+
+			$QuizSections->insert($sData);
+			$sectionid = $QuizSections->lastId();
+
+			foreach ($sectionQuestions as $sortno=>$r) {
+				$sqData['question'] = $r['question'];
+				$sqData['typeid'] = $r['typeid'];
+				$sqData['sectionid'] = $sectionid;
+				$sqData['quizid'] = $quizid;
+				$sqData['sortno'] = $sortno+1;
+				$sqData['marks'] = $r['marks'];
+				$QuizQuestions->insert($sqData);
+				$questionid = $QuizQuestions->lastId();
+	
+				unset($qData);
+				$qData['questionid'] = $questionid;
+				if ($typeid == 1) { //fitb
+					$fbs = $FillBlanks->search($r['id']);
+					foreach ($fbs as $fb) {
+						$qData['answer'] = $fb['answer'];
+						$qData['questionid'] = $questionid;
+						$FillBlanks->insert($qData);
+					}
+				}
+				if ($typeid == 2) { //sa
+					$sas = $ShortAnswers->search($r['id']);
+					foreach ($sas as $sa) {
+						$qData['answer'] = $sa['answer'];
+						$ShortAnswers->insert($qData);
+					}
+				}
+				if ($typeid == 3) { //la
+					$las = $LongAnswers->search($r['id']);
+					foreach ($las as $la) {
+						$qData['answer'] = $la['answer'];
+						$LongAnswers->insert($qData);
+					}
+				}
+				if ($typeid == 4) { //mc
+					$mas = $MultipleChoices->search($r['id']);
+					foreach ($mas as $ma) {
+						$qData['answer'] = $ma['answer'];
+						$qData['correct'] = $ma['correct'];
+						$MultipleChoices->insert($qData);
+					}
+				}
+				if ($typeid == 5) { //mi
+					$mils = $MatchingItems->search($r['id']);
+					foreach ($mils as $mil) {
+						$qData['qoption'] = $mil['qoption'];
+						$qData['answer'] = $mil['answer'];
+						$MatchingItems->insert($qData);
+					}
+				}
+				if ($typeid == 6) { //tf
+					$tfs = $TrueFalses->search($r['id']);
+					foreach ($tfs as $tf) {
+						$qData['answer'] = $tf['answer'];
+						$TrueFalses->insert($qData);
+					}
+				}
+	
+			}
+
+			$sectionSortNo++;
+		}
+
+
+	}
+
+	$_SESSION['message'] = 'Test Created';
+	redirect('quizzes','quiz_section_edit','id='.$quizid);
+}
+
+if ( $action == 'quiz_print' ) {
+	$data['layout'] = 'layout_print.tpl.php';
+	
+	$id = $_GET['id'];
+	
+	$tData['quiz'] = $Quizzes->getDetails($id,SCHOOLID);
+	$sections = $QuizSections->search($id);
+	
+	foreach ($sections as $v=>$r) {
+		$typeid = $r['typeid'];
+		$sectionid = $r['id'];
+		
+		$tData['sections'][$r['id']]['title'] = $r['title'];
+		$tData['sections'][$r['id']]['marks'] = $r['marks'];
+		$tData['sections'][$r['id']]['sortno'] = $r['sortno'];
+		
+		$questions = '';
+		$questions = $QuizQuestions->search($id,$sectionid);
+		
+		foreach ($questions as $vq=>$q) {
+			$qnid = $q['id'];
+			switch ($typeid) {
+				case 1: $questions[$vq]['fb'] = $FillBlanks->search($qnid,$sectionid); break;
+				case 2: $questions[$vq]['sa'] = $ShortAnswers->search($qnid,$sectionid); break;
+				case 3: $questions[$vq]['la'] = $LongAnswers->search($qnid,$sectionid); break;
+				case 4: $questions[$vq]['mc'] = $MultipleChoices->search($qnid,$sectionid); break;
+				case 5: { 
+					$questions[$vq]['mi'] = $MatchingItems->search($qnid,$sectionid);
+					foreach ($questions[$vq]['mi'] as $vmi=>$mi) {
+						$answers[$qnid][$vmi]['answer'] = $mi['answer'];
+					}
+					break;
+				}
+				case 6: $questions[$vq]['tf'] = $TrueFalses->search($qnid,$sectionid); break;
+			}			
+		}
+		$tData['sections'][$r['id']]['qns'] = $questions;
+	}
+	
+	foreach ($answers as $qnid=>$r) {
+		shuffle($answers[$qnid]);
+	}
+	
+	$tData['answers'] = $answers;
+	
+	$data['content'] = loadTemplate('quiz_print.tpl.php',$tData);
+}
+
 if ( $action == 'quiz_upload_edit') {
 	$id = $_GET['id'];
 	
@@ -404,4 +560,32 @@ if ( $action == 'ajax_quiz_class_remove' ) {
 	
 	$response[]=$obj;
 	$data['content'] = $response;
+}
+
+if ( $action == 'ajax_getQuizzes' ) {
+	
+	
+	$catid = $_GET['catid'];	
+	$scatid = $_GET['scatid'];	
+	
+	$quizzes = $Quizzes->search(SCHOOLID,'',$catid,$scatid);
+	
+	foreach ($quizzes as $r) {
+		$obj = null;
+		$obj->id = $r['id'];
+		$obj->name = $r['name'];
+		$response[]=$obj;
+	}
+	
+	$data['content'] = $response;
+}
+
+if ( $action == 'get_quiz_sections' ) {
+	$data['layout'] = 'layout_iframe.tpl.php';
+
+	$quizid = $_GET['quizid'];
+	
+	$tData['sections'] = $QuizSections->search($quizid);
+	
+	$data['content'] = loadTemplate('template_quiz_section_edit.tpl.php',$tData);
 }
